@@ -1,0 +1,32 @@
+{
+  "name": "pylon-local",
+  "version": "1.0.0",
+  "description": "pylon local development",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/liamhtml/pylon-local.git"
+  },
+  "author": "liamhtml",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/liamhtml/pylon-local/issues"
+  },
+  "homepage": "https://github.com/liamhtml/pylon-local#readme",
+  "dependencies": {
+    "@pylonbot/runtime": "^1.0.0",
+    "@pylonbot/runtime-discord": "^1.0.0",
+    "@rollup/plugin-typescript": "^8.3.0",
+    "rollup": "^2.64.0",
+    "typescript": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/node": "^17.0.10"
+  },
+  "bin": {
+    "pylon": "./index.ts"
+  }
+}
