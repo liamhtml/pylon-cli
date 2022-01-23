@@ -5,7 +5,7 @@ const fs = require('fs');
 const access = require('fs/promises').access;
 const readline = require('readline');
 const nodeFetch = require('node-fetch');
-const exec = require('child_process');
+const child_process = require('child_process');
 
 let [, , ...args] = process.argv
 for (let i = 0; i < args.length; i++) {
@@ -98,7 +98,7 @@ export default {
 */rollup.config.js`;
                     fs.writeFile(`./${name}/.gitignore`, gitignoreContent, 'utf8', () => {});
                     fs.mkdir(`./${name}/src/`, () => {})
-                    console.log(`\x1b[32m➕ Created default folders and files`);
+                    console.log(`\x1b[32m➕ Created default folders and files\x1b[0m`);
                     let project = JSON.parse(editorData.script.project);
                     let files = project.files;
                     for (let i = 0; i < files.length; i++) {
@@ -123,12 +123,11 @@ export default {
                                 await fs.writeFile(`./${name}/src${previousPaths(e)}/${paths[e]}`, files[i].content, 'utf8', () => {
                                     if (i == files.length - 1) {
                                         console.log(`\x1b[32m📥 Imported ${files.length} files\x1b[0m`);
-                                        exec('npm install rollup typescript @pylonbot/runtime @pylonbot/runtime-discord', (err, stdout, sterr) => {
+                                        child_process.exec('npm install rollup @rollup/plugin-typescript typescript @pylonbot/runtime @pylonbot/runtime-discord', (err, stdout, sterr) => {
                                                 if (err) {
                                                     console.log(err);
                                                 }
-                                                console.log(stdout);
-                                                console.log(`Installed dependencies`);
+                                            console.log(`\x1b[32m🛠️  Installed dependencies\x1b[0m`);
                                                 return;
                                         });
                                     }
@@ -230,15 +229,4 @@ export default {
      }
 } else {
     console.log('Command not found. Try `pylon help`');
-}
-
-function build() {
-
-    exec('rollup -c', (err, stdout, sterr) => {
-        if (err) {
-            console.log(err);
-        }
-        console.log(stdout);
-        return;
-    });
 }
