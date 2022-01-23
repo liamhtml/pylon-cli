@@ -1,3 +1,1 @@
-# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
-/config.json
-/rollup.config.js
+/test
