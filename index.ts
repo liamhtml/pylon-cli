@@ -14,7 +14,7 @@ for (let i = 0; i < args.length; i++) {
 /*
     DONE pylon help (-h, --help)
     pylon [command] help
-    pylon init [project name]
+    DONE pylon init [project name]
     pylon publish [project folder path]
     pylon pull [project folder path]
     DONE pylon version (-v, --version)
@@ -72,17 +72,13 @@ See \`pylon init help\` for details
 
                     console.log(`\n\x1b[34m📂 Found deployment to guild '${editorData.guild.name}'\x1b[0m`)
                     
-                    fs.mkdir(`./${name}`, () => {
-                        console.log(`\x1b[32m➕ Created ./${name}\x1b[0m`);
-                    })
+                    fs.mkdir(`./${name}`, () => {})
                     const configContent = `{
     "name": "${name}", 
     "token": "${token}", 
     "deployment_id": "${deployment_id}"
 }`
-                    fs.writeFile(`./${name}/config.json`, configContent, 'utf8', () => {
-                        console.log(`\x1b[32m➕ Created ./${name}/config.json\x1b[0m`)
-                    });
+                    fs.writeFile(`./${name}/config.json`, configContent, 'utf8', () => {});
                     const rollupConfigContent = `// This is the config file for Rollup.js. It is necessary for bundling and publishing to work properly, so don't mess with it if you
 // don't know what you're doing.
 import typescript from '@rollup/plugin-typescript';
@@ -95,35 +91,38 @@ export default {
     },
     plugins: [typescript()]
 };`;
-                    fs.writeFile(`./${name}/rollup.config.js`, rollupConfigContent, 'utf8', () => {
-                        console.log(`\x1b[32m➕ Created ./${name}/rollup.config.js\x1b[0m`)
-                    });
+                    fs.writeFile(`./${name}/rollup.config.js`, rollupConfigContent, 'utf8', () => {});
                     const gitignoreContent = `# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
 ${name}/config.json
 ${name}/rollup.config.js`;
-                    fs.writeFile(`./${name}/.gitignore`, gitignoreContent, 'utf8', () => {
-                        console.log(`\x1b[32m➕ Created ./${name}/.gitignore\x1b[0m`)
-                    });
-                    fs.mkdir(`./${name}/src/`, () => {
-                        console.log(`\x1b[32m➕ Created ./${name}/src\x1b[0m`);
-                    })
-                    const mainContent = `console.log('Hello world!')`;
+                    fs.writeFile(`./${name}/.gitignore`, gitignoreContent, 'utf8', () => {});
+                    fs.mkdir(`./${name}/src/`, () => {})
+                    console.log(`\x1b[32m➕ Created default folders and files`);
                     let project = JSON.parse(editorData.script.project);
                     let files = project.files;
                     for (let i = 0; i < files.length; i++) {
                         let paths = files[i].path.split('/');
                         for (let e = 1; e < paths.length; e++) {
-                            // if it is a folder path
-                            if (e !== (paths.length - 1)) {
-                                await fs.mkdir(`./${name}/src/${paths[e]}/`, () => {});
-                            // if it is a file path
-                            } else {
+                            function previousPaths(index) {
                                 let previousPaths = '';
-                                for (let a = 1; a < (paths.length - 1); a++) {
+                                for (let a = 1; a < index; a++) {
                                     previousPaths = `${previousPaths}/${paths[a]}`
                                 }
-                                await fs.writeFile(`./${name}/src${previousPaths}/${paths[e]}`, files[i].content, 'utf8', () => {
-                                    console.log(`\x1b[32m📥 Imported ./${name}/src${previousPaths}/${paths[e]}\x1b[0m`);
+                                return previousPaths;
+                            }
+                            // if it is a folder path
+                            if (e !== (paths.length - 1)) {
+                                await fs.mkdir(`./${name}/src/${previousPaths(e)}/${paths[e]}/`, () => {});
+                            // if it is a file path
+                            } else {
+                                if (paths[e].endsWith('.ts')) {
+                                    files[i].content = `/// <reference types="@pylonbot/runtime" />
+/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove.\n\n${files[i].content}`
+                                }
+                                await fs.writeFile(`./${name}/src${previousPaths(e)}/${paths[e]}`, files[i].content, 'utf8', () => {
+                                    if (i == files.length - 1) {
+                                     console.log(`\x1b[32m📥 Imported ${files.length} files\x1b[0m`);
+                                    }
                                 });
                             }
                         }
@@ -137,7 +136,78 @@ ${name}/rollup.config.js`;
 } else if (args[0] == 'publish') {
 
 } else if (args[0] == 'pull') {
+    if (args[1]) {
+        let name = args[1];
+        let config = require(`./${name}/config.json`);
 
+        // fetch current script
+        async function pull() {
+            let response = await nodeFetch(`https://pylon.bot/api/deployments/${config.deployment_id}`, {
+                method: 'GET',
+                headers: {
+                    Authorization: config.token
+                },
+            });
+            if (!response.ok) {
+                console.log('Hmm, something went wrong. Probably either your Pylon API token or deployment ID was incorrect.');
+                process.exit();
+            } 
+
+            function betterRmdir (path) {
+                if (fs.existsSync(path)) {
+                    fs.readdirSync(path).forEach(function (file, index) {
+                        var curPath = path + "/" + file;
+                        if (fs.lstatSync(curPath).isDirectory()) { // recurse
+                            betterRmdir(curPath);
+                        } else { // delete file
+                            fs.unlinkSync(curPath);
+                        }
+                    });
+                    fs.rmdirSync(path);
+                }
+            };
+
+            let editorData = await response.json();
+            console.log(`\n\x1b[34m📂 Found deployment to guild '${editorData.guild.name}'\x1b[0m`)
+            let project = JSON.parse(editorData.script.project);
+            let files = project.files;
+
+            // remove source folder
+            betterRmdir(`./${name}/src/`);
+
+            // reimport source folder
+            await fs.mkdir(`./${name}/src/`, () => {})
+
+            for (let i = 0; i < files.length; i++) {
+                let paths = files[i].path.split('/');
+                for (let e = 1; e < paths.length; e++) {
+                    function previousPaths(index) {
+                        let previousPaths = '';
+                        for (let a = 1; a < index; a++) {
+                            previousPaths = `${previousPaths}/${paths[a]}`
+                        }
+                        return previousPaths;
+                    }
+                    // if it is a folder path
+                    if (e !== (paths.length - 1)) {
+                        await fs.mkdir(`./${name}/src/${previousPaths(e)}/${paths[e]}/`, () => { });
+                        // if it is a file path
+                    } else {
+                        if (paths[e].endsWith('.ts')) {
+                            files[i].content = `/// <reference types="@pylonbot/runtime" />
+/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove.\n\n${files[i].content}`
+                        }
+                        await fs.writeFile(`./${name}/src${previousPaths(e)}/${paths[e]}`, files[i].content, 'utf8', () => {});
+                    }
+                }
+            }
+            console.log(`\x1b[32m📥 Successfully pulled ${files.length} files\x1b[0m`)
+        }
+
+        pull();
+    } else {
+        console.log('Error: project file path not specified.');
+    }
 } else if (args[0] == 'version' || args[0] == '-v' || args[0] == '--version') {
     if (args[1] == 'help' || args[1] == '-h' || args[1] == '--help') {
         console.log(`\`pylon version\` - Checks current version of Pylon CLI`)
