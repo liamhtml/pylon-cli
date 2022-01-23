@@ -111,9 +111,22 @@ ${name}/rollup.config.js`;
                     let project = JSON.parse(editorData.script.project);
                     let files = project.files;
                     for (let i = 0; i < files.length; i++) {
-                        await fs.writeFile(`./${name}/src/${files[i].path}`, files[i].content, 'utf8', () => {
-                            console.log(`\x1b[32m📥 Imported ./${name}/${files[i].path}\x1b[0m`);
-                        });
+                        let paths = files[i].path.split('/');
+                        for (let e = 1; e < paths.length; e++) {
+                            // if it is a folder path
+                            if (e !== (paths.length - 1)) {
+                                await fs.mkdir(`./${name}/src/${paths[e]}/`, () => {});
+                            // if it is a file path
+                            } else {
+                                let previousPaths = '';
+                                for (let a = 1; a < (paths.length - 1); a++) {
+                                    previousPaths = `${previousPaths}/${paths[a]}`
+                                }
+                                await fs.writeFile(`./${name}/src${previousPaths}/${paths[e]}`, files[i].content, 'utf8', () => {
+                                    console.log(`\x1b[32m📥 Imported ./${name}/src${previousPaths}/${paths[e]}\x1b[0m`);
+                                });
+                            }
+                        }
                     }
 
                     rl.close()
