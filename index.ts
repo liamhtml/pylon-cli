@@ -98,6 +98,12 @@ export default {
                     fs.writeFile(`./${name}/rollup.config.js`, rollupConfigContent, 'utf8', () => {
                         console.log(`\x1b[32m➕ Created ./${name}/rollup.config.js\x1b[0m`)
                     });
+                    const gitignoreContent = `# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
+${name}/config.json
+${name}/rollup.config.js`;
+                    fs.writeFile(`./${name}/.gitignore`, gitignoreContent, 'utf8', () => {
+                        console.log(`\x1b[32m➕ Created ./${name}/.gitignore\x1b[0m`)
+                    });
                     fs.mkdir(`./${name}/src/`, () => {
                         console.log(`\x1b[32m➕ Created ./${name}/src\x1b[0m`);
                     })
