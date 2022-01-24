@@ -71,7 +71,7 @@ See \`pylon init help\` for details
                     }
                     let editorData = await response.json();
 
-                    console.log(`\n\x1b[34m📂 Found deployment to guild '${editorData.guild.name}'\x1b[0m`)
+                    console.log(`\n\x1b[34mFound deployment to guild '${editorData.guild.name}'\x1b[0m`)
                     
                     fs.mkdir(`./${name}`, () => {})
                     const configContent = `{
@@ -80,19 +80,19 @@ See \`pylon init help\` for details
     "deployment_id": "${deployment_id}"
 }`
                     fs.writeFile(`./${name}/config.json`, configContent, 'utf8', () => {});
-                    const rollupConfigContent = `// This is the config file for Rollup.js. It is necessary for bundling and publishing to work properly, so don't mess with it if you
-// don't know what you're doing.
-import typescript from '@rollup/plugin-typescript';
+//                     const rollupConfigContent = `// This is the config file for Rollup.js. It is necessary for bundling and publishing to work properly, so don't mess with it if you
+// // don't know what you're doing.
+// import typescript from '@rollup/plugin-typescript';
 
-export default {
-    input: 'src/main.ts',
-    output: {
-        file: 'bundle.ts',
-        format: 'cjs'
-    },
-    plugins: [typescript()]
-};`;
-                    fs.writeFile(`./${name}/rollup.config.js`, rollupConfigContent, 'utf8', () => {});
+// export default {
+//     input: 'src/main.ts',
+//     output: {
+//         file: 'bundle.ts',
+//         format: 'cjs'
+//     },
+//     plugins: [typescript()]
+// };`;
+//                     fs.writeFile(`./${name}/rollup.config.js`, rollupConfigContent, 'utf8', () => {});
                     const gitignoreContent = `# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
 */config.json
 */rollup.config.js`;
@@ -118,16 +118,17 @@ export default {
                             } else {
                                 if (paths[e].endsWith('.ts')) {
                                     files[i].content = `/// <reference types="@pylonbot/runtime" />
-/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove.\n\n${files[i].content}`
+/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove it if you want to your code to work!\n\n${files[i].content}`
                                 }
                                 await fs.writeFile(`./${name}/src${previousPaths(e)}/${paths[e]}`, files[i].content, 'utf8', () => {
                                     if (i == files.length - 1) {
-                                        console.log(`\x1b[32m📥 Imported ${files.length} files\x1b[0m`);
+                                        console.log(`\x1b[32m➕ Imported ${files.length} files\x1b[0m`);
+                                        console.log(`\x1b[34mInstalling dependencies...\x1b[0m`);
                                         child_process.exec('npm install rollup @rollup/plugin-typescript typescript @pylonbot/runtime @pylonbot/runtime-discord', (err, stdout, sterr) => {
                                                 if (err) {
                                                     console.log(err);
                                                 }
-                                            console.log(`\x1b[32m🛠️  Installed dependencies\x1b[0m`);
+                                                console.log(`\x1b[32m✔️  Done! \x1b[0m`);
                                                 return;
                                         });
                                     }
@@ -142,10 +143,58 @@ export default {
         });
     }
 } else if (args[0] == 'publish') {
+    if (args[1] == 'help' || args[1] == '-h' || args[1] == '--help') {
+        console.log(`\`pylon publish\` - Publishes your local code to the Pylon editor and bot. You will need to have added Pylon to your server, and to have run the \`pylon init\` command to start using it.`)
+    } else { 
+        if (args[1]) {
+            const name = args[1];
+            const config = require(`./${name}/config.json`);
+            const reqBody = {
+                script: {
+                    contents: '',
+                    project: {
+                        files: []
+                    }
+                }
+            }
+            console.log(`\x1b[34mBundling project...\x1b[0m`)
+            child_process.exec(`rollup ./${name}/src/main.ts --file ./${name}/bundle.ts --format cjs`, async (err, stdout, sterr) => {
+                if (err) {
+                    console.log(err);
+                    process.exit();
+                }
+                console.log(`\x1b[32m📦 Successfully bundled! \x1b[0m`)
+                await fs.readFile(`./${name}/bundle.ts`, 'utf8', (err, data) => {
+                    if (err) {
+                        console.log(err);
+                        process.exit();
+                    };
+                    reqBody.script.contents = data;
+                    const files = [];
+                    console.log(reqBody);
 
+                    async function publish() {
+                        let response = await nodeFetch(`https://pylon.bot/api/deployments/${config.deployment_id}`, {
+                            method: 'POST',
+                            headers: {
+                                Authorization: config.token
+                            },
+                            body: reqBody
+                        });
+                        if (!response.ok) {
+                            console.log('Hmm, something went wrong. Probably either your Pylon API token or deployment ID was incorrect.');
+                            process.exit();
+                        }
+                    }
+                });
+            });
+        } else {
+            console.log('Error: project path not specified.');
+        }
+    }
 } else if (args[0] == 'pull') {
     if (args[1] == 'help' || args[1] == '-h' || args[1] == '--help') {
-        console.log(`\`pylon pull\` - Pulls . You will need to have added Pylon to your server to start using it here.`)
+        console.log(`\`pylon pull\` - Pulls your code from the Pylon editor. You will need to have added Pylon to your server, and to have run the \`pylon init\` command to start using it.`)
     } else {
         if (args[1]) {
             let name = args[1];
@@ -179,7 +228,7 @@ export default {
                 };
 
                 let editorData = await response.json();
-                console.log(`\n\x1b[34m📂 Found deployment to guild '${editorData.guild.name}'\x1b[0m`)
+                console.log(`\n\x1b[34mFound deployment to guild '${editorData.guild.name}'\x1b[0m`)
                 let project = JSON.parse(editorData.script.project);
                 let files = project.files;
 
@@ -212,7 +261,7 @@ export default {
                         }
                     }
                 }
-                console.log(`\x1b[32m📥 Successfully pulled ${files.length} files\x1b[0m`)
+                console.log(`\x1b[32m✔️  Successfully pulled ${files.length} files\x1b[0m`)
             }
 
             pull();
