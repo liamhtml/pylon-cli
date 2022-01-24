@@ -163,7 +163,7 @@ See \`pylon init help\` for details
                     console.log(err);
                     process.exit();
                 }
-                console.log(`\x1b[32m📦 Successfully bundled! \x1b[0m`)
+                console.log(`\x1b[32m📦 Successfully bundled!\x1b[0m`)
                 await fs.readFile(`./${name}/bundle.ts`, 'utf8', (err, data) => {
                     if (err) {
                         console.log(err);
@@ -171,7 +171,9 @@ See \`pylon init help\` for details
                     };
                     reqBody.script.contents = data;
                     const files = [];
-                    console.log(reqBody);
+                    for (let i = 0; i < 0; i++) {
+
+                    }
 
                     async function publish() {
                         let response = await nodeFetch(`https://pylon.bot/api/deployments/${config.deployment_id}`, {
@@ -182,10 +184,14 @@ See \`pylon init help\` for details
                             body: reqBody
                         });
                         if (!response.ok) {
-                            console.log('Hmm, something went wrong. Probably either your Pylon API token or deployment ID was incorrect.');
+                            console.log(`${response.status}: ${response.statusText}`);
                             process.exit();
+                        } else {
+                            console.log(`\x1b[0m✔️ Published!\x1b[0m`)
                         }
                     }
+
+                    publish();
                 });
             });
         } else {
