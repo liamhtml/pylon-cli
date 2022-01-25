@@ -21,7 +21,7 @@
     "@pylonbot/runtime-discord": "^1.0.0",
     "@rollup/plugin-typescript": "^8.3.0",
     "node-fetch": "^2.6.7",
-    "rollup": "^2.66.0",
+    "rollup": "^2.66.1",
     "typescript": "^4.5.5"
   },
   "devDependencies": {

@@ -7,6 +7,9 @@ const readline = require('readline');
 const nodeFetch = require('node-fetch');
 const child_process = require('child_process');
 
+const fileHeader = `/// <reference types="@pylonbot/runtime" />
+/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove it if you want to your code to work!\n\n`
+
 let [, , ...args] = process.argv
 for (let i = 0; i < args.length; i++) {
     args[i].trim();
@@ -117,20 +120,12 @@ See \`pylon init help\` for details
                             // if it is a file path
                             } else {
                                 if (paths[e].endsWith('.ts')) {
-                                    files[i].content = `/// <reference types="@pylonbot/runtime" />
-/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove it if you want to your code to work!\n\n${files[i].content}`
+                                    files[i].content = `${fileHeader}${files[i].content}`
                                 }
                                 await fs.writeFile(`./${name}/src${previousPaths(e)}/${paths[e]}`, files[i].content, 'utf8', () => {
                                     if (i == files.length - 1) {
-                                        console.log(`\x1b[32m➕ Imported ${files.length} files\x1b[0m`);
-                                        console.log(`\x1b[34mInstalling dependencies...\x1b[0m`);
-                                        child_process.exec('npm install rollup @rollup/plugin-typescript typescript @pylonbot/runtime @pylonbot/runtime-discord', (err, stdout, sterr) => {
-                                                if (err) {
-                                                    console.log(err);
-                                                }
-                                                console.log(`\x1b[32m✔️  Done! \x1b[0m`);
-                                                return;
-                                        });
+                                        console.log(`\x1b[32m➕ Imported ${files.length} file(s)\x1b[0m`);
+                                        console.log(`\x1b[32m✔️  Done!\x1b[0m`);
                                     }
                                 });
                             }
@@ -164,15 +159,47 @@ See \`pylon init help\` for details
                     process.exit();
                 }
                 console.log(`\x1b[32m📦 Successfully bundled!\x1b[0m`)
-                await fs.readFile(`./${name}/bundle.ts`, 'utf8', (err, data) => {
+                await fs.readFile(`./${name}/bundle.ts`, 'utf8', async (err, data) => {
                     if (err) {
                         console.log(err);
                         process.exit();
                     };
+                    if (data.startsWith(fileHeader)) {
+                        data.replace(fileHeader, '');
+                    }
                     reqBody.script.contents = data;
-                    const files = [];
-                    for (let i = 0; i < 0; i++) {
+                    
+                    function getFiles(dir, files_) {
+                        files_ = files_ || [];
+                        var files = fs.readdirSync(dir);
+                        for (var i in files) {
+                            var name = dir + '/' + files[i];
+                            if (fs.statSync(name).isDirectory()) {
+                                getFiles(name, files_);
+                            } else {
+                                files_.push(name);
+                            }
+                        }
+                        return files_;
+                    }
 
+                    let files = getFiles(`./${name}/src`, '');
+                    let bodyFiles = [];
+                    for (let i = 0; i < files.length; i++) {
+                        await fs.readFile(files[i], 'utf8', async (err, fileData) => {
+                            if (err) {
+                                console.log(err);
+                                return;
+                            }
+                            let bodyFileData = fileData;
+                            if (fileData.startsWith(fileHeader)) {
+                                bodyFileData = fileData.replace(fileHeader, '');
+                            }
+                            bodyFiles.push({
+                                path: files[i].replace(`./${name}/src/`, ''),
+                                content: bodyFileData
+                            })
+                        })
                     }
 
                     async function publish() {
@@ -285,3 +312,11 @@ See \`pylon init help\` for details
 } else {
     console.log('Command not found. Try `pylon help`');
 }
+
+// child_process.exec('echo test', (err, stdout, sterr) => {
+//     if (err) {
+//         console.log(err);
+//     }
+//     console.log(stdout);
+//     return;
+// });
