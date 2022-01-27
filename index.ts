@@ -144,14 +144,6 @@ See \`pylon init help\` for details
         if (args[1]) {
             const name = args[1];
             const config = require(`./${name}/config.json`);
-            const reqBody = {
-                script: {
-                    contents: '',
-                    project: {
-                        files: []
-                    }
-                }
-            }
             console.log(`\x1b[34mBundling project...\x1b[0m`)
             child_process.exec(`rollup ./${name}/src/main.ts --file ./${name}/bundle.ts --format cjs`, async (err, stdout, sterr) => {
                 if (err) {
@@ -167,7 +159,6 @@ See \`pylon init help\` for details
                     if (data.startsWith(fileHeader)) {
                         data.replace(fileHeader, '');
                     }
-                    reqBody.script.contents = data;
                     
                     function getFiles(dir, files_) {
                         files_ = files_ || [];
@@ -185,24 +176,38 @@ See \`pylon init help\` for details
 
                     let files = getFiles(`./${name}/src`, '');
                     let bodyFiles = [];
-                    for (let i = 0; i < files.length; i++) {
-                        await fs.readFile(files[i], 'utf8', async (err, fileData) => {
-                            if (err) {
-                                console.log(err);
-                                return;
-                            }
-                            let bodyFileData = fileData;
-                            if (fileData.startsWith(fileHeader)) {
-                                bodyFileData = fileData.replace(fileHeader, '');
-                            }
-                            bodyFiles.push({
-                                path: files[i].replace(`./${name}/src/`, ''),
-                                content: bodyFileData
-                            })
-                        })
+                    async function loopFiles() {
+                        for (let i = 0; i < files.length; i++) {
+                            await fs.readFile(files[i], 'utf8', async (err, fileData) => {
+                                if (err) {
+                                    console.log(err);
+                                    return;
+                                } 
+                                let bodyFileData = fileData;
+                                if (fileData.startsWith(fileHeader)) {
+                                    bodyFileData = fileData.replace(fileHeader, '');
+                                }
+                                bodyFiles.push({
+                                    path: files[i].replace(`./${name}/src/`, ''),
+                                    content: bodyFileData
+                                })
+                                if (i == files.length - 1) {
+                                    publish(bodyFiles);
+                                }
+                            });
+                        };
                     }
+                    loopFiles()
 
-                    async function publish() {
+                    async function publish(bodyFiles) {
+                        const reqBody = JSON.stringify({
+                            script: {
+                                contents: data,
+                                project: {
+                                    files: bodyFiles
+                                }
+                            }
+                        });
                         let response = await nodeFetch(`https://pylon.bot/api/deployments/${config.deployment_id}`, {
                             method: 'POST',
                             headers: {
@@ -214,11 +219,9 @@ See \`pylon init help\` for details
                             console.log(`${response.status}: ${response.statusText}`);
                             process.exit();
                         } else {
-                            console.log(`\x1b[0m✔️ Published!\x1b[0m`)
+                            console.log(`\x1b[32m✔️  Published!\x1b[0m`)
                         }
                     }
-
-                    publish();
                 });
             });
         } else {
