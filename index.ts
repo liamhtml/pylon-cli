@@ -8,7 +8,8 @@ const nodeFetch = require('node-fetch');
 const child_process = require('child_process');
 
 const fileHeader = `/// <reference types="@pylonbot/runtime" />
-/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove it if you want to your code to work!\n\n`
+/// <reference types="@pylonbot/runtime-discord" />
+// This states that you are writing code using Pylon types, do not remove it if you want to your code to work!\n`
 
 let [, , ...args] = process.argv
 for (let i = 0; i < args.length; i++) {
@@ -20,7 +21,7 @@ for (let i = 0; i < args.length; i++) {
     pylon [command] help
     DONE pylon init [project name]
     pylon publish [project folder path]
-    DONE pylon pull [project folder path]
+    DONE? pylon pull [project folder path]
     DONE pylon version (-v, --version)
 */
 
@@ -83,22 +84,8 @@ See \`pylon init help\` for details
     "deployment_id": "${deployment_id}"
 }`
                     fs.writeFile(`./${name}/config.json`, configContent, 'utf8', () => {});
-//                     const rollupConfigContent = `// This is the config file for Rollup.js. It is necessary for bundling and publishing to work properly, so don't mess with it if you
-// // don't know what you're doing.
-// import typescript from '@rollup/plugin-typescript';
-
-// export default {
-//     input: 'src/main.ts',
-//     output: {
-//         file: 'bundle.ts',
-//         format: 'cjs'
-//     },
-//     plugins: [typescript()]
-// };`;
-//                     fs.writeFile(`./${name}/rollup.config.js`, rollupConfigContent, 'utf8', () => {});
                     const gitignoreContent = `# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
-*/config.json
-*/rollup.config.js`;
+*/config.json`;
                     fs.writeFile(`./${name}/.gitignore`, gitignoreContent, 'utf8', () => {});
                     fs.mkdir(`./${name}/src/`, () => {})
                     console.log(`\x1b[32m➕ Created default folders and files\x1b[0m`);
@@ -156,7 +143,7 @@ See \`pylon init help\` for details
                         console.log(err);
                         process.exit();
                     };
-                    if (data.startsWith(fileHeader)) {
+                    if (data.includes(fileHeader)) {
                         data.replace(fileHeader, '');
                     }
                     
@@ -178,24 +165,18 @@ See \`pylon init help\` for details
                     let bodyFiles = [];
                     async function loopFiles() {
                         for (let i = 0; i < files.length; i++) {
-                            await fs.readFile(files[i], 'utf8', async (err, fileData) => {
-                                if (err) {
-                                    console.log(err);
-                                    return;
-                                } 
-                                let bodyFileData = fileData;
-                                if (fileData.startsWith(fileHeader)) {
-                                    bodyFileData = fileData.replace(fileHeader, '');
-                                }
-                                bodyFiles.push({
-                                    path: files[i].replace(`./${name}/src/`, ''),
-                                    content: bodyFileData
-                                })
-                                if (i == files.length - 1) {
-                                    publish(bodyFiles);
-                                }
-                            });
-                        };
+                            let fileData = fs.readFileSync(files[i], 'utf8');
+                            if (fileData.includes(fileHeader)) {
+                                fileData = fileData.replace(fileHeader, '');
+                            }
+                            bodyFiles.push({
+                                path: files[i].replace(`./${name}/src/`, ''),
+                                content: fileData
+                            })
+                            if (i == (files.length - 1)) {
+                                publish(bodyFiles);
+                            }
+                        }
                     }
                     loopFiles()
 
@@ -289,11 +270,15 @@ See \`pylon init help\` for details
                             await fs.mkdir(`./${name}/src/${previousPaths(e)}/${paths[e]}/`, () => { });
                             // if it is a file path
                         } else {
+                            let content = files[i].content
                             if (paths[e].endsWith('.ts')) {
-                                files[i].content = `/// <reference types="@pylonbot/runtime" />
-/// <reference types="@pylonbot/runtime-discord" />\n// This states that you are writing code using Pylon types, do not remove.\n\n${files[i].content}`
+                                content = `${fileHeader}${files[i].content}`;
                             }
-                            await fs.writeFile(`./${name}/src${previousPaths(e)}/${paths[e]}`, files[i].content, 'utf8', () => {});
+                            if (files[i].path.endsWith(`${paths[e]}/`)) {
+                                await fs.mkdir(`./${name}/src${previousPaths(e)}/${paths[e]}`,  () => {});
+                            } else {
+                            await fs.writeFile(`./${name}/src${previousPaths(e)}/${paths[e]}`, content, 'utf8', () => {});
+                            }
                         }
                     }
                 }
