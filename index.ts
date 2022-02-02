@@ -16,15 +16,6 @@ for (let i = 0; i < args.length; i++) {
     args[i].trim();
 }
 
-/*
-    DONE pylon help (-h, --help)
-    pylon [command] help
-    DONE pylon init [project name]
-    pylon publish [project folder path]
-    DONE? pylon pull [project folder path]
-    DONE pylon version (-v, --version)
-*/
-
 if (args[0] == 'help' || args[0] == '-h' || args[0] == '--help' || args.length == 0) {
     console.log(`
     Pylon CLI v${version}
@@ -124,7 +115,7 @@ See \`pylon init help\` for details
             });
         });
     }
-} else if (args[0] == 'publish') {
+} else if (args[0] == 'publish' || args[0] == 'p') {
     if (args[1] == 'help' || args[1] == '-h' || args[1] == '--help') {
         console.log(`\`pylon publish\` - Publishes your local code to the Pylon editor and bot. You will need to have added Pylon to your server, and to have run the \`pylon init\` command to start using it.`)
     } else { 
