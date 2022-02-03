@@ -220,7 +220,6 @@ See \`pylon init help\` for details
                     }
 
                     let files = getFiles(`src/`, "");
-                    console.log(files);
                     let bodyFiles = [];
                     async function loopFiles() {
                         for (let i = 0; i < files.length; i++) {
@@ -372,11 +371,3 @@ See \`pylon init help\` for details
 } else {
     console.log("Command not found. Try `pylon help`");
 }
-
-// child_process.exec('echo test', (err, stdout, sterr) => {
-//     if (err) {
-//         console.log(err);
-//     }
-//     console.log(stdout);
-//     return;
-// });
