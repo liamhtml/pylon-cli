@@ -23,7 +23,7 @@ if (
     args.length == 0
 ) {
     if (args[1] == "help" || args[1] == "-h" || args[1] == "--help") {
-        console.log('It\'s a help command. Is that really so hard to figure out?');
+        console.log("It's a help command. Is that really so hard to figure out?");
     } else {
         console.log(`
         Pylon CLI v${version}
@@ -274,92 +274,92 @@ See \`pylon init help\` for details
             `\`pylon pull\` - Pulls your code from the Pylon editor. You will need to have added Pylon to your server, and to have run the \`pylon init\` command to start using it.`
         );
     } else {
-            const config = require(`${process.cwd()}/config.json`);
+        const config = require(`${process.cwd()}/config.json`);
 
-            // fetch current script
-            async function pull() {
-                let response = await nodeFetch(
-                    `https://pylon.bot/api/deployments/${config.deployment_id}`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Authorization: config.token,
-                        },
-                    }
-                );
-                if (!response.ok) {
-                    console.log(
-                        "Hmm, something went wrong. Probably either your Pylon API token or deployment ID was incorrect."
-                    );
-                    process.exit();
+        // fetch current script
+        async function pull() {
+            let response = await nodeFetch(
+                `https://pylon.bot/api/deployments/${config.deployment_id}`,
+                {
+                    method: "GET",
+                    headers: {
+                        Authorization: config.token,
+                    },
                 }
-
-                function betterRmdir(path) {
-                    if (fs.existsSync(path)) {
-                        fs.readdirSync(path).forEach(function (file, index) {
-                            var curPath = path + "/" + file;
-                            if (fs.lstatSync(curPath).isDirectory()) {
-                                // recurse
-                                betterRmdir(curPath);
-                            } else {
-                                // delete file
-                                fs.unlinkSync(curPath);
-                            }
-                        });
-                        fs.rmdirSync(path);
-                    }
-                }
-
-                let editorData = await response.json();
+            );
+            if (!response.ok) {
                 console.log(
-                    `\n\x1b[34mFound deployment to guild '${editorData.guild.name}'\x1b[0m`
+                    "Hmm, something went wrong. Probably either your Pylon API token or deployment ID was incorrect."
                 );
-                let project = JSON.parse(editorData.script.project);
-                let files = project.files;
-
-                // remove source folder
-                betterRmdir(`src/`);
-
-                // reimport source folder
-                await fs.mkdir(`src/`, () => { });
-
-                for (let i = 0; i < files.length; i++) {
-                    let paths = files[i].path.split("/");
-                    function previousPaths(index) {
-                        let previousPaths = "";
-                        for (let a = 1; a < index; a++) {
-                            previousPaths = `${previousPaths}/${paths[a]}`;
-                        }
-                        return previousPaths;
-                    }
-                    for (let e = 0; e < paths.length; e++) {
-                        // if it is a file path
-                        if (e == paths.length - 1) {
-                            let content = files[i].content;
-                            if (paths[e].endsWith(".ts")) {
-                                content = `${fileHeader}${files[i].content}`;
-                            }
-                            if (files[i].path.endsWith(`${paths[e]}/`)) {
-                                await fs.mkdir(`src${previousPaths(e)}/${paths[e]}`, () => { });
-                            } else {
-                                await fs.writeFile(
-                                    `src${previousPaths(e)}/${paths[e]}`,
-                                    content,
-                                    "utf8",
-                                    () => { }
-                                );
-                            }
-                        } else {
-                            await fs.mkdir(`src/${previousPaths(e)}/${paths[e]}/`, () => { });
-                        }
-                    }
-                }
-                console.log(
-                    `\x1b[32m✔️  Successfully pulled ${files.length} item(s)\x1b[0m`
-                );
+                process.exit();
             }
 
-            pull();
+            function betterRmdir(path) {
+                if (fs.existsSync(path)) {
+                    fs.readdirSync(path).forEach(function (file, index) {
+                        var curPath = path + "/" + file;
+                        if (fs.lstatSync(curPath).isDirectory()) {
+                            // recurse
+                            betterRmdir(curPath);
+                        } else {
+                            // delete file
+                            fs.unlinkSync(curPath);
+                        }
+                    });
+                    fs.rmdirSync(path);
+                }
+            }
+
+            let editorData = await response.json();
+            console.log(
+                `\n\x1b[34mFound deployment to guild '${editorData.guild.name}'\x1b[0m`
+            );
+            let project = JSON.parse(editorData.script.project);
+            let files = project.files;
+
+            // remove source folder
+            betterRmdir(`src/`);
+
+            // reimport source folder
+            await fs.mkdir(`src/`, () => { });
+
+            for (let i = 0; i < files.length; i++) {
+                let paths = files[i].path.split("/");
+                function previousPaths(index) {
+                    let previousPaths = "";
+                    for (let a = 1; a < index; a++) {
+                        previousPaths = `${previousPaths}/${paths[a]}`;
+                    }
+                    return previousPaths;
+                }
+                for (let e = 0; e < paths.length; e++) {
+                    // if it is a file path
+                    if (e == paths.length - 1) {
+                        let content = files[i].content;
+                        if (paths[e].endsWith(".ts")) {
+                            content = `${fileHeader}${files[i].content}`;
+                        }
+                        if (files[i].path.endsWith(`${paths[e]}/`)) {
+                            await fs.mkdir(`src${previousPaths(e)}/${paths[e]}`, () => { });
+                        } else {
+                            await fs.writeFile(
+                                `src${previousPaths(e)}/${paths[e]}`,
+                                content,
+                                "utf8",
+                                () => { }
+                            );
+                        }
+                    } else {
+                        await fs.mkdir(`src/${previousPaths(e)}/${paths[e]}/`, () => { });
+                    }
+                }
+            }
+            console.log(
+                `\x1b[32m✔️  Successfully pulled ${files.length} item(s)\x1b[0m`
+            );
+        }
+
+        pull();
     }
 } else if (args[0] == "version" || args[0] == "-v" || args[0] == "--version") {
     if (args[1] == "help" || args[1] == "-h" || args[1] == "--help") {
