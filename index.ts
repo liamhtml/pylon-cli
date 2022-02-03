@@ -22,19 +22,23 @@ if (
     args[0] == "--help" ||
     args.length == 0
 ) {
-    console.log(`
-    Pylon CLI v${version}
+    if (args[1] == "help" || args[1] == "-h" || args[1] == "--help") {
+        console.log('It\'s a help command. Is that really so hard to figure out?');
+    } else {
+        console.log(`
+        Pylon CLI v${version}
 
-    pylon help                           - Displays this message
-    pylon [command] help                 - Displays more information about a command
-    pylon init                           - Locally creates a new project, grabs the code from your Pylon online editor, \x1b[1musing 
-                                           this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
-    pylon publish [project folder path]  - Publishes all of your scripts to the Pylon editor, \x1b[1musing 
-                                           this command will overwrite your Pylon editor code permanently, so be careful!\x1b[0m
-    pylon pull [project folder path]     - Pulls the code of your project from the Pylon editor, \x1b[1musing 
-                                           this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
-    pylon version                        - Displays Pylon CLI current version
-    `);
+        pylon help                           - Displays this message
+        pylon [command] help                 - Displays more information about a command
+        pylon init                           - Locally creates a new project, grabs the code from your Pylon online editor, \x1b[1musing 
+                                            this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
+        pylon publish [project folder path]  - Publishes all of your scripts to the Pylon editor, \x1b[1musing 
+                                            this command will overwrite your Pylon editor code permanently, so be careful!\x1b[0m
+        pylon pull [project folder path]     - Pulls the code of your project from the Pylon editor, \x1b[1musing 
+                                            this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
+        pylon version                        - Displays Pylon CLI current version
+        `);
+    }
 } else if (args[0] == "init" || args[0] == "i") {
     if (args[1] == "help" || args[1] == "-h" || args[1] == "--help") {
         console.log(
