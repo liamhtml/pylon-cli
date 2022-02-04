@@ -1,21 +1,21 @@
 {
-  "name": "pylon-local",
+  "name": "pylon-cli",
   "version": "1.0.0",
-  "description": "pylon local development",
+  "description": "another pylon cli",
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/liamhtml/pylon-local.git"
+    "url": "git+https://github.com/liamhtml/pylon-cli.git"
   },
   "author": "liamhtml",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/liamhtml/pylon-local/issues"
+    "url": "https://github.com/liamhtml/pylon-cli/issues"
   },
-  "homepage": "https://github.com/liamhtml/pylon-local#readme",
+  "homepage": "https://github.com/liamhtml/pylon-cli#readme",
   "dependencies": {
     "@rollup/plugin-typescript": "^8.3.0",
     "node-fetch": "^2.6.7",
