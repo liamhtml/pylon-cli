@@ -193,7 +193,7 @@ pylon version        - Displays Pylon CLI current version
         const config = require(`${process.cwd()}/config.json`);
         console.log(`\x1b[34mBundling project...\x1b[0m`);
         child_process.exec(
-            `rollup src/main.ts --file bundle.ts --format cjs --no-strict`,
+            `rollup src/main.ts --file bundle.ts --format cjs --no-strict -p @rollup/plugin-typescript`,
             async (err, stdout, sterr) => {
                 if (err) {
                     console.log(err);

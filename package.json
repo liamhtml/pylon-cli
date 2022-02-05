@@ -1,8 +1,12 @@
 {
   "name": "@liamhtml/pylon-cli",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "a cli for the discord bot creator pylon",
-  "keywords": ["pylonbot", "pylon", "cli"],
+  "keywords": [
+    "pylonbot",
+    "pylon",
+    "cli"
+  ],
   "main": "index.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
