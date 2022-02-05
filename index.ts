@@ -26,17 +26,17 @@ if (
         console.log("It's a help command. Is that really so hard to figure out?");
     } else {
         console.log(`
-        Pylon CLI v${version}
+Pylon CLI v${version}
 
-        pylon help                           - Displays this message
-        pylon [command] help                 - Displays more information about a command
-        pylon init                           - Locally creates a new project, grabs the code from your Pylon online editor, \x1b[1musing 
-                                            this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
-        pylon publish [project folder path]  - Publishes all of your scripts to the Pylon editor, \x1b[1musing 
-                                            this command will overwrite your Pylon editor code permanently, so be careful!\x1b[0m
-        pylon pull [project folder path]     - Pulls the code of your project from the Pylon editor, \x1b[1musing 
-                                            this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
-        pylon version                        - Displays Pylon CLI current version
+pylon help           - Displays this message
+pylon [command] help - Displays more information about a command
+pylon init           - Locally creates a new project, grabs the code from your Pylon online editor, \x1b[1musing 
+                       this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
+pylon publish        - Publishes all of your scripts to the Pylon editor, \x1b[1musing 
+                       this command will overwrite your Pylon editor code permanently, so be careful!\x1b[0m
+pylon pull           - Pulls the code of your project from the Pylon editor, \x1b[1musing 
+                       this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
+pylon version        - Displays Pylon CLI current version
         `);
     }
 } else if (args[0] == "init" || args[0] == "i") {
@@ -45,30 +45,30 @@ if (
             `\`pylon init\` - Initiates a new Pylon project locally. You will need to have added Pylon to your server to start using it here.`
         );
     } else {
-        console.log(`
-Initiating new project
-See \`pylon init help\` for details
-        `);
+        console.log('Initiating new project');
+        try {
+            child_process.execSync(`npm i --save-dev typescript @rollup/plugin-typescript https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord`);
+            child_process.execSync(`npm i -g rollup`);
+        } catch(e) {
+            console.log(e);
+            process.exit();
+        } finally {
+            console.log('\x1b[32m✔️  Installed dependencies: rollup, typescript, @rollup/plugin-typescript, @pylonbot/runtime, @pylonbot/runtime-discord\x1b[0m')
+        }
 
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout,
         });
 
-        console.log(
-            "First, name your new project. (Should only contain path-safe characters, no spaces)"
-        );
-        rl.question("Project name: ", function (name) {
             console.log(
-                '\nThis is where it gets kinda weird. Login to https://pylon.bot, open Developer Tools > Storage > Local Storage > https://pylon.bot. \nYou should see a table with a part that says "token". The string next to this is your authentication token.'
+                'This bit\'s kinda weird. Login to https://pylon.bot, open Developer Tools > Storage > Local Storage > https://pylon.bot. \nYou should see a table with a part that says "token". The string next to this is your authentication token.'
             );
             rl.question("Pylon API token:  ", function (token) {
                 console.log(
                     "\nOpen the script editor of the guild that you'd like to connect to. At this URL, you should see something like `/deployments/123456789/editor`. \nThis long number is your deployment ID."
                 );
                 rl.question("Deployment ID: ", async function (deployment_id) {
-                    let names = name.split(" ");
-                    name = names[0].trim();
 
                     // fetch current script
                     let response = await nodeFetch(
@@ -93,7 +93,6 @@ See \`pylon init help\` for details
                     );
 
                     const configContent = `{
-    "name": "${name}", 
     "token": "${token}", 
     "deployment_id": "${deployment_id}"
 }`;
@@ -178,7 +177,6 @@ See \`pylon init help\` for details
                     rl.close();
                 });
             });
-        });
     }
 } else if (args[0] == "publish" || args[0] == "p") {
     if (args[1] == "help" || args[1] == "-h" || args[1] == "--help") {
@@ -186,10 +184,16 @@ See \`pylon init help\` for details
             `\`pylon publish\` - Publishes your local code to the Pylon editor and bot. You will need to have added Pylon to your server, and to have run the \`pylon init\` command to start using it.`
         );
     } else {
+        try {
+            fs.accessSync(`${process.cwd()}/config.json`);
+        } catch {
+            console.log(`\x1b[31mError: config.json file not found. Run \`pylon init\` before using this command.\x1b[0m`);
+            process.exit();
+        } 
         const config = require(`${process.cwd()}/config.json`);
         console.log(`\x1b[34mBundling project...\x1b[0m`);
         child_process.exec(
-            `rollup src/main.ts --file bundle.ts --format cjs`,
+            `rollup src/main.ts --file bundle.ts --format cjs --no-strict`,
             async (err, stdout, sterr) => {
                 if (err) {
                     console.log(err);
@@ -274,6 +278,12 @@ See \`pylon init help\` for details
             `\`pylon pull\` - Pulls your code from the Pylon editor. You will need to have added Pylon to your server, and to have run the \`pylon init\` command to start using it.`
         );
     } else {
+        try {
+            fs.accessSync(`${process.cwd()}/config.json`);
+        } catch {
+            console.log(`\x1b[31mError: config.json file not found. Run \`pylon init\` before using this command.\x1b[0m`);
+            process.exit();
+        } 
         const config = require(`${process.cwd()}/config.json`);
 
         // fetch current script
