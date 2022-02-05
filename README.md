@@ -1,7 +1,6 @@
 # pylon-cli
 a cli for [pylon](https://pylon.bot)
 ## installation
-install with [npm](https://npmjs.com)
 ```
 npm i @liamhtml/pylon-cli
 ```
