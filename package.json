@@ -1,5 +1,5 @@
 {
-  "name": "pylon-cli",
+  "name": "@liamhtml/pylon-cli",
   "version": "1.0.0",
   "description": "a cli for the discord bot creator pylon",
   "main": "index.ts",

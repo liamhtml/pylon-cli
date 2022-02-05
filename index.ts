@@ -29,7 +29,7 @@ if (
 Pylon CLI v${version}
 
 pylon help           - Displays this message
-pylon [command] help - Displays more information about a command
+pylon <command> help - Displays more information about a command
 pylon init           - Locally creates a new project, grabs the code from your Pylon online editor, \x1b[1musing 
                        this command will overwrite your locally saved code permanently, so be careful!\x1b[0m
 pylon publish        - Publishes all of your scripts to the Pylon editor, \x1b[1musing 
