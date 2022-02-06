@@ -6,6 +6,7 @@ const access = require("fs/promises").access;
 const readline = require("readline");
 const nodeFetch = require("node-fetch");
 const child_process = require("child_process");
+const websocket = require('ws').WebSocket;
 
 const fileHeader = `/// <reference types="@pylonbot/runtime" />
 /// <reference types="@pylonbot/runtime-discord" />
@@ -45,7 +46,7 @@ pylon version        - Displays Pylon CLI current version
             `\`pylon init\` - Initiates a new Pylon project locally. You will need to have added Pylon to your server to start using it here.`
         );
     } else {
-        console.log('Initiating new project');
+        console.log('\x1b[34mInitiating new project...\x1b[0m');
         try {
             child_process.execSync(`npm i --save-dev typescript tslib @rollup/plugin-typescript https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord`);
             child_process.execSync(`npm i -g rollup`);
@@ -186,6 +187,18 @@ export default {
                         console.log(
                             `\x1b[32m✔️  Successfully pulled ${files.length} item(s)\x1b[0m`
                         );
+                        console.log(`\x1b[32m✔️  Published to '${editorData.guild.name}'!\x1b[0m`);
+                        const ws = new websocket(editorData.workbench_url);
+                        console.log(`\x1b[32m🛠️  Connected to workbench.\x1b[0m`)
+                        console.log(`\x1b[2m(Kill connection with CTRL + C)\x1b[0m`)
+                        ws.on('message', function message(data) {
+                            data = JSON.parse(data.toString());
+                            let logContent = data[0].data[0];
+                            if (data[0].method == "error") {
+                                logContent = '\x1b[31m' + logContent + '\x1b[0m';
+                            }
+                            console.log(logContent);
+                        });
                     }
 
                     pull();
@@ -215,7 +228,7 @@ export default {
                     console.log(err);
                     process.exit();
                 }
-                console.log(`\x1b[32m📦 Successfully bundled!\x1b[0m`);
+                console.log(`\x1b[32m📦 Successfully bundled.\x1b[0m`);
                 await fs.readFile(`bundle.ts`, "utf8", async (err, data) => {
                     if (err) {
                         console.log(err);
@@ -281,7 +294,19 @@ export default {
                             console.log(`${response.status}: ${response.statusText}`);
                             process.exit();
                         } else {
-                            console.log(`\x1b[32m✔️  Published!\x1b[0m`);
+                            let json = await response.json();
+                            console.log(`\x1b[32m✔️  Published to '${json.guild.name}'!\x1b[0m`);
+                            const ws = new websocket(json.workbench_url);
+                            console.log(`\x1b[32m🛠️  Connected to workbench.\x1b[0m`)
+                            console.log(`\x1b[2m(Kill connection with CTRL + C)\x1b[0m`)
+                            ws.on('message', function message(data) {
+                                data = JSON.parse(data.toString());
+                                let logContent = data[0].data[0];
+                                if (data[0].method == "error") {
+                                    logContent = '\x1b[31m' + logContent + '\x1b[0m';
+                                }
+                                console.log(logContent);
+                            });
                         }
                     }
                 });
@@ -383,6 +408,18 @@ export default {
             console.log(
                 `\x1b[32m✔️  Successfully pulled ${files.length} item(s)\x1b[0m`
             );
+
+            const ws = new websocket(editorData.workbench_url);
+            console.log(`\x1b[32m🛠️  Connected to workbench.\x1b[0m`)
+            console.log(`\x1b[2m(Kill connection with CTRL + C)\x1b[0m`)
+            ws.on('message', function message(data) {
+                data = JSON.parse(data.toString());
+                let logContent = data[0].data[0];
+                if (data[0].method == "error") {
+                    logContent = '\x1b[31m' + logContent + '\x1b[0m';
+                }
+                console.log(logContent);
+            });
         }
 
         pull();

@@ -1,6 +1,6 @@
 {
   "name": "@liamhtml/pylon-cli",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "a cli for the discord bot creator pylon",
   "keywords": [
     "pylonbot",
@@ -22,10 +22,15 @@
   },
   "homepage": "https://github.com/liamhtml/pylon-cli#readme",
   "dependencies": {
-    "node-fetch": "^2.6.7"
+    "node-fetch": "^2.6.7",
+    "ws": "^8.4.2"
   },
   "devDependencies": {
+    "@pylonbot/runtime": "https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime",
+    "@pylonbot/runtime-discord": "https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord",
+    "@rollup/plugin-typescript": "^8.3.0",
     "@types/node": "^17.0.10",
+    "tslib": "^2.3.1",
     "typescript": "^4.5.5"
   },
   "bin": {
