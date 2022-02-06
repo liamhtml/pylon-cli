@@ -6,7 +6,7 @@ i am aware that the code is a mess, might change that someday
 npm i @liamhtml/pylon-cli
 ```
 ## setup
-once you have pylon on your server, run `pylon init` to get started. 
+once you have pylon on your discord server, run `pylon init` to get started. 
 ## commands
 |command               | purpose|
 |----------------------|---------------------|
