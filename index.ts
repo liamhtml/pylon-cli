@@ -92,14 +92,14 @@ pylon version        - Displays Pylon CLI current version
                         `\n\x1b[34mFound deployment to guild '${editorData.guild.name}'\x1b[0m`
                     );
 
+                    const gitignoreContent = `# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
+config.json`;
+                    fs.writeFileSync(`.gitignore`, gitignoreContent, "utf8");
                     const configContent = `{
     "token": "${token}", 
     "deployment_id": "${deployment_id}"
 }`;
                     fs.writeFile(`config.json`, configContent, "utf8", () => { });
-                    const gitignoreContent = `# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
-*/config.json`;
-                    fs.writeFile(`.gitignore`, gitignoreContent, "utf8", () => { });
                     fs.mkdir(`src/`, () => { });
                     console.log(`\x1b[32m➕ Created default folders and files\x1b[0m`);
 

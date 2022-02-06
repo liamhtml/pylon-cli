@@ -1,6 +1,6 @@
 {
   "name": "@liamhtml/pylon-cli",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "a cli for the discord bot creator pylon",
   "keywords": [
     "pylonbot",
@@ -25,8 +25,7 @@
     "node-fetch": "^2.6.7"
   },
   "devDependencies": {
-    "@types/node": "^17.0.10",
-    "typescript": "^4.5.5"
+    "@types/node": "^17.0.10"
   },
   "bin": {
     "pylon": "index.ts"
