@@ -47,13 +47,13 @@ pylon version        - Displays Pylon CLI current version
     } else {
         console.log('Initiating new project');
         try {
-            child_process.execSync(`npm i --save-dev typescript @rollup/plugin-typescript https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord`);
+            child_process.execSync(`npm i --save-dev typescript tslib @rollup/plugin-typescript https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord`);
             child_process.execSync(`npm i -g rollup`);
         } catch(e) {
             console.log(e);
             process.exit();
         } finally {
-            console.log('\x1b[32m✔️  Installed dependencies: rollup, typescript, @rollup/plugin-typescript, @pylonbot/runtime, @pylonbot/runtime-discord\x1b[0m')
+            console.log('\x1b[32m✔️  Installed dependencies: rollup, typescript, tslib, @rollup/plugin-typescript, @pylonbot/runtime, @pylonbot/runtime-discord\x1b[0m')
         }
 
         const rl = readline.createInterface({
@@ -93,13 +93,29 @@ pylon version        - Displays Pylon CLI current version
                     );
 
                     const gitignoreContent = `# Be careful with this: removing the line that ignores the config.json could lead to your Pylon token being exposed if you ever intend to put this project on GitHub.
-config.json`;
+config.json
+bundle.ts
+rollup.config.js`;
                     fs.writeFileSync(`.gitignore`, gitignoreContent, "utf8");
                     const configContent = `{
     "token": "${token}", 
     "deployment_id": "${deployment_id}"
 }`;
                     fs.writeFile(`config.json`, configContent, "utf8", () => { });
+
+
+                    const rollupConfigContent = `import typescript from '@rollup/plugin-typescript';
+
+export default {
+  input: 'src/main.ts',
+  output: {
+    file: 'bundle.ts',
+    format: 'cjs'
+  },
+  plugins: [typescript({target: "es2017"})]
+};`;
+                    fs.writeFile(`rollup.config.js`, rollupConfigContent, "utf8", () => { });
+
                     fs.mkdir(`src/`, () => { });
                     console.log(`\x1b[32m➕ Created default folders and files\x1b[0m`);
 
@@ -193,7 +209,7 @@ config.json`;
         const config = require(`${process.cwd()}/config.json`);
         console.log(`\x1b[34mBundling project...\x1b[0m`);
         child_process.exec(
-            `rollup src/main.ts --file bundle.ts --format cjs --no-strict -p @rollup/plugin-typescript`,
+            `rollup -c "rollup.config.js" --configPlugin typescript --no-strict`,
             async (err, stdout, sterr) => {
                 if (err) {
                     console.log(err);
