@@ -8,11 +8,41 @@ npm i @liamhtml/pylon-cli
 ## setup
 once you have pylon on your discord server, run `pylon init` to get started. 
 ## commands
-|command               | purpose|
-|----------------------|---------------------|
-|pylon help            |Displays a help message|
-|pylon <command> help  |Displays more information about a command|
-|pylon init            |Locally creates a new project, grabs the code from your Pylon online editor, **using this command will overwrite your locally saved code permanently, so be careful!**|
-|pylon publish         |Publishes all of your scripts to the Pylon editor, **using this command will overwrite your Pylon editor code permanently, so be careful!**|
-|pylon pull            |Pulls the code of your project from the Pylon editor, **musing this command will overwrite your locally saved code permanently, so be careful!**|
-|pylon version         |Displays Pylon CLI current version|
+
+<table>
+  <tr>
+    <th>command</th>
+    <th>purpose</th>
+    <th>aliases</th>
+  </tr>
+  <tr>
+    <td><code>pylon help</code></td>
+    <td>displays a help message</td>
+    <td><code>-h, --help</code></td>
+  </tr>
+  <tr>
+    <td><code>pylon <command> help</code></td>
+    <td>displays more information about a command</td>
+    <td><code>-h, --help</code></td>
+  </tr>
+  <tr>
+    <td><code>pylon init</code></td>
+    <td>locally creates a new project, grabs the code from your Pylon online editor, <strong>using this command will overwrite your locally saved code permanently, so be careful!</strong></td>
+    <td><code>i</code></td>
+  </tr>
+  <tr>
+    <td><code>pylon publish</code></td>
+    <td>publishes all of your scripts to the Pylon editor, <strong>using this command will overwrite your Pylon editor code permanently, so be careful!</strong></td>
+    <td><code>p</code></td>
+  </tr>
+  <tr>
+    <td><code>pylon pull</code></td>
+    <td>pulls the code of your project from the Pylon editor, <strong>using this command will overwrite your locally saved code permanently, so be careful!</strong></td>
+    <td>none</td>
+  </tr>
+  <tr>
+    <td><code>pylon version</code></td>
+    <td>checks the current version of the cli you have installed</td>
+    <td><code>-v, --version</code></td>
+  </tr>
+</table>
