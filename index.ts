@@ -49,7 +49,7 @@ pylon version        - Displays Pylon CLI current version
         console.log('\x1b[34mInitiating new project...\x1b[0m');
         try {
             child_process.execSync(`npm i --save-dev typescript tslib @rollup/plugin-typescript https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord`);
-            child_process.execSync(`npm i -g rollup`);
+            child_process.execSync(`npm i --location=global rollup`);
         } catch(e) {
             console.log(e);
             process.exit();
