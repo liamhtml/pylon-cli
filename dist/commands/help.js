@@ -1,4 +1,4 @@
-import { out } from '../utils.js';
+import { out, getVersion } from '../utils.js';
 const help = (arg) => {
     if (arg) {
         switch (arg) {
@@ -22,7 +22,7 @@ const help = (arg) => {
         }
     }
     else {
-        out(`Pylon CLI v${process.env.npm_package_version}
+        out(`Pylon CLI v${getVersion()}
 pylon help           - Displays this message
 pylon help <command> - Displays more detailed information about a command
 pylon init           - Locally creates a new project, grabs the code from the Pylon editor

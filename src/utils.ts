@@ -1,3 +1,7 @@
+import * as dotenv from 'dotenv';
+
+export type Command = (arg?: string) => void;
+
 export function out(message: string, type?: string): void {
     switch (type) {
         case 'success': 
@@ -11,4 +15,8 @@ export function out(message: string, type?: string): void {
     }
 }
 
-export type Command = (arg?: string) => void;
+export function getVersion(): string {
+    dotenv.config();
+    let version: string = process.env.package_version!;
+    return version;
+}

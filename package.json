@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/liamhtml/pylon-cli#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "tpy": "^1.0.0-pre-release-3"
   },
   "devDependencies": {

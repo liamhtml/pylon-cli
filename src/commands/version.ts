@@ -1,7 +1,7 @@
-import { out, Command } from '../utils.js'
+import { Command, out, getVersion } from '../utils.js'
 
-const version: Command = (arg) => {
-
+const version: Command = () => {
+    out(`v${getVersion()}`);
 }
 
 export default version;

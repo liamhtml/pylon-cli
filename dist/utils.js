@@ -1,3 +1,4 @@
+import * as dotenv from 'dotenv';
 export function out(message, type) {
     switch (type) {
         case 'success':
@@ -9,4 +10,9 @@ export function out(message, type) {
         default:
             console.log(message);
     }
+}
+export function getVersion() {
+    dotenv.config();
+    let version = process.env.package_version;
+    return version;
 }
