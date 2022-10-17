@@ -23,14 +23,14 @@ const help: Command = (arg) => {
         }
     } else {
         out(`Pylon CLI v${getVersion()}
-pylon help           - Displays this message
-pylon help <command> - Displays more detailed information about a command
-pylon init           - Locally creates a new project, grabs the code from the Pylon editor
-pylon publish        - Publishes all of your scripts to the Pylon editor, \x1b[1mthis will 
+pylon help             Displays this message
+pylon help <command>   Displays more detailed information about a command
+pylon init             Locally creates a new project, grabs the code from the Pylon editor
+pylon publish          Publishes all of your scripts to the Pylon editor, \x1b[1mthis will 
                        overwrite all of the files in the Pylon editor\'s filesystem!\x1b[0m
-pylon pull           - Pulls the code of your project from the Pylon editor, \x1b[1mthis will 
+pylon pull             Pulls the code of your project from the Pylon editor, \x1b[1mthis will 
                        overwrite all of the files in your local directory!\x1b[0m
-pylon version        - Check the package version
+pylon version          Check the package version
         `)
     }
 }
