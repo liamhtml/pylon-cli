@@ -7,7 +7,8 @@
     "pylon",
     "cli"
   ],
-  "main": "index.ts",
+  "type": "module",
+  "main": "main.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -22,13 +23,12 @@
   },
   "homepage": "https://github.com/liamhtml/pylon-cli#readme",
   "dependencies": {
-    "node-fetch": "^2.6.7",
-    "ws": "^8.4.2"
+    "tpy": "^1.0.0-pre-release-3"
   },
   "devDependencies": {
     "@types/node": "^17.0.10"
   },
   "bin": {
-    "pylon": "index.ts"
+    "pylon": "dist/main.js"
   }
 }
