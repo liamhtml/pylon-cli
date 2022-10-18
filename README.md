@@ -1,48 +1,59 @@
 # pylon-cli
-a cli for [pylon](https://pylon.bot) <br>
-i am aware that the code is a mess, might change that someday
-## installation
-```
+A command-line interface for [Pylon.bot](https://pylon.bot), written in TypeScript. <br>
+## Setup
+1. Set up Pylon (follow the instructions at [Pylon.bot](https://pylon.bot))
+2. Once Pylon is on your Discord server, create a new project directory in your editor of choice.
+2. Install pylon-cli
+```bash
 npm i @liamhtml/pylon-cli
+# or with yarn:
+yarn add @liamhtml/pylon-cli
 ```
-## setup
-once you have pylon on your discord server, run `pylon init` to get started. 
-## commands
+3. Install dependencies for your working environment
+You'll need these to code a Pylon bot in your editor - or you'll get a lot of squiggly red lines. They are not *technically* required, but strongly reccommended!
+- [TypeScript](https://typescriptlang.org) - a strictly typed superset of JavaScript which Pylon bots are written in.
+- [Pylon SDK Types](https://github.com/pylonbot/pylon-sdk-types) - typings for the Pylon SDK. (These gitpkg links are used to link to the GitHub repo because the typings on npm are three years behind)
+```bash
+npm i --save-dev typescript https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord
+# or with yarn:
+yarn add --dev typescript https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime https://gitpkg.now.sh/pylonbot/pylon-sdk-types/runtime-discord
+```
+4. If everything went smoothly, run `pylon init` to link a new discord server.
+## Commands
 
 <table>
   <tr>
-    <th>command</th>
-    <th>purpose</th>
-    <th>aliases</th>
+    <th>Command</th>
+    <th>Purpose</th>
   </tr>
   <tr>
     <td><code>pylon help</code></td>
     <td>displays a help message</td>
-    <td><code>-h, --help</code></td>
   </tr>
   <tr>
     <td><code>pylon <command> help</code></td>
     <td>displays more information about a command</td>
-    <td><code>-h, --help</code></td>
   </tr>
   <tr>
     <td><code>pylon init</code></td>
     <td>locally creates a new project, grabs the code from your Pylon online editor, <strong>using this command will overwrite your locally saved code permanently, so be careful!</strong></td>
-    <td><code>i</code></td>
   </tr>
   <tr>
     <td><code>pylon publish</code></td>
     <td>publishes all of your scripts to the Pylon editor, <strong>using this command will overwrite your Pylon editor code permanently, so be careful!</strong></td>
-    <td><code>p</code></td>
   </tr>
   <tr>
     <td><code>pylon pull</code></td>
     <td>pulls the code of your project from the Pylon editor, <strong>using this command will overwrite your locally saved code permanently, so be careful!</strong></td>
-    <td>none</td>
   </tr>
   <tr>
     <td><code>pylon version</code></td>
     <td>checks the current version of the cli you have installed</td>
-    <td><code>-v, --version</code></td>
   </tr>
 </table>
+
+## Dependencies
+These are packages which pylon-cli depends on.
+- [Tpy](https://github.com/insyri/tpy) - interaction with the Pylon API
+- [Rollup](https://rollupjs.org) - bundles files before they are published to Pylon
+- [dotenv](https://npmjs.com/dotenv) - niche version numbering
