@@ -26,7 +26,8 @@ If applicable, add screenshots to help explain your problem.
 **Environment**
  - OS [e.g. Windows 11]
  - Editor [e.g. Visual Studio Code]
- - Version [e.g. 2.3.0]
+ - Shell [e.g. Windows PowerShell]
+ - Package version [e.g. 2.3.0]
 
 **Additional context**
 Add any other context about the problem here.
